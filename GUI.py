@@ -12,7 +12,7 @@ from PyQt5.QtWidgets import *
 import pyqtgraph as pg
 import sys
 import time
-from process import Process
+from process_mod import Process
 from webcam import Webcam
 from video import Video
 from interface import waitKey, plotXY
@@ -220,9 +220,14 @@ class GUI(QMainWindow, QThread):
 
         self.process.frame_in = frame
         self.process.run()
-        
-        cv2.imshow("Processed", frame)
-        
+        try:
+            frame = cv2.resize(frame, (640, 480))
+            cv2.imshow("Processed", frame)
+        except cv2.error:
+            print("End of video")
+            self.status = False
+            self.input.stop()
+
         self.frame = self.process.frame_out #get the frame to show in GUI
         self.f_fr = self.process.frame_ROI #get the face to show in GUI
         #print(self.f_fr.shape)

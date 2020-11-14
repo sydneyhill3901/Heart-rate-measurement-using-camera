@@ -3,6 +3,7 @@ import numpy as np
 import time
 
 class Video(object):
+
     def __init__(self):
         self.dirname = ""
         self.cap = None
@@ -14,7 +15,7 @@ class Video(object):
             print("invalid filename!")
             return
             
-        self.cap = cv2.VideoCapture(self.dirname)
+        self.cap = cv2.VideoCapture(self.dirname[0])
         fps = self.cap.get(cv2.CAP_PROP_FPS)
         self.frame_count = self.cap.get(cv2.CAP_PROP_FRAME_COUNT)
         print(fps)
@@ -42,8 +43,7 @@ class Video(object):
                 self.stop()
                 print(time.time()-self.t0)
                 return
-            else:    
-                frame = cv2.resize(frame,(640,480))
+
         else:
             frame = np.ones((480,640,3), dtype=np.uint8)
             col = (0,256,256)
