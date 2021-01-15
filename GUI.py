@@ -12,7 +12,7 @@ from PyQt5.QtWidgets import *
 import pyqtgraph as pg
 import sys
 import time
-from process_mod import Process
+from process_mod import ProcessMod
 from webcam import Webcam
 from video import Video
 from interface import waitKey, plotXY
@@ -32,7 +32,7 @@ class GUI(QMainWindow, QThread):
         print("Input: webcam")
         self.statusBar.showMessage("Input: webcam",5000)
         self.btnOpen.setEnabled(False)
-        self.process = Process()
+        self.process = ProcessMod(GUIMode=True)
         self.status = False
         self.frame = np.zeros((10,10,3),np.uint8)
         #self.plot = np.zeros((10,10,3),np.uint8)
@@ -87,17 +87,7 @@ class GUI(QMainWindow, QThread):
         self.lblHR2.setGeometry(900,70,300,40)
         self.lblHR2.setFont(font)
         self.lblHR2.setText("Heart rate: ")
-        
-        # self.lbl_Age = QLabel(self) #label to show stable HR
-        # self.lbl_Age.setGeometry(900,120,300,40)
-        # self.lbl_Age.setFont(font)
-        # self.lbl_Age.setText("Age: ")
-        
-        # self.lbl_Gender = QLabel(self) #label to show stable HR
-        # self.lbl_Gender.setGeometry(900,170,300,40)
-        # self.lbl_Gender.setFont(font)
-        # self.lbl_Gender.setText("Gender: ")
-        
+
         #dynamic plot
         self.signal_Plt = pg.PlotWidget(self)
         
@@ -229,7 +219,7 @@ class GUI(QMainWindow, QThread):
             self.input.stop()
 
         self.frame = self.process.frame_out #get the frame to show in GUI
-        self.f_fr = self.process.frame_ROI #get the face to show in GUI
+        self.f_fr = cv2.resize(self.process.frame_ROI, (200, 200)) #get the face to show in GUI
         #print(self.f_fr.shape)
         self.bpm = self.process.bpm #get the bpm change over the time
         

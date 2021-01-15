@@ -16,10 +16,7 @@ class FaceDetection(object):
         self.starttime = 0
 
     def face_detect(self, frame):
-        if frame is None:
-            print("facecount:" + str(self.facecount))
-            print("framecount:" + str(self.framecount))
-            return
+
         frame = imutils.resize(frame, width=1000)
         face_frame = np.zeros((10, 10, 3), np.uint8)
         mask = np.zeros((10, 10, 3), np.uint8)
@@ -27,6 +24,8 @@ class FaceDetection(object):
         ROI2 = np.zeros((10, 10, 3), np.uint8)
         status = False
 
+        if frame is None:
+            return
         frame_shape_x = frame.shape[1]
         frame_shape_y = frame.shape[0]
         rgb_frame = frame[:, :, ::-1]
@@ -64,17 +63,38 @@ class FaceDetection(object):
                     cv2.circle(face_frame, (a, b), 1, (0, 0, 255), -1) #draw facial landmarks
 
                 #cv2.rectangle(frame, (x, y), (w + x, h + y), (0, 0, 255), 1)
+                scalefactor = shape[27][1] - shape[30][1]
 
-                cv2.rectangle(face_frame,(shape[54][0], shape[29][1]), #draw rectangle on right and left cheeks
-                        (shape[12][0],shape[33][1]), (0,255,0), 0)
-                cv2.rectangle(face_frame, (shape[4][0], shape[29][1]), 
+                cv2.rectangle(face_frame,(shape[54][0], shape[29][1]), # right cheek
+                        ((shape[12][0] + int(scalefactor/4)), shape[33][1]), (0,255,0), 0)
+                cv2.rectangle(face_frame, ((shape[4][0] - int(scalefactor/4)), shape[29][1]), # left cheek
                         (shape[48][0],shape[33][1]), (0,255,0), 0)
+                cv2.rectangle(face_frame, (shape[59][0], (shape[57][1] - int(scalefactor/4))), # chin/neck
+                        (shape[55][0],(shape[8][1] - int(scalefactor/3))), (0,255,0), 0)
+                cv2.rectangle(face_frame, (shape[18][0], (shape[18][1] + scalefactor)), # forehead
+                              (shape[25][0],(shape[24][1] + int(scalefactor/3))), (0,255,0), 0)
+                cv2.rectangle(face_frame, ((shape[12][0] + int(scalefactor/4)), shape[16][1]),  # outer right
+                              ((shape[12][0] - int(scalefactor/6)), shape[13][1]), (0, 255, 0), 0)
+                cv2.rectangle(face_frame, ((shape[4][0] - int(scalefactor/4)), shape[0][1]),  # outer left
+                              ((shape[4][0] + int(scalefactor/6)), shape[3][1]), (0, 255, 0), 0)
                 
                 ROI1 = face_frame[shape[29][1]:shape[33][1], #right cheek
-                        shape[54][0]:shape[12][0]]
+                        shape[54][0]:(shape[12][0] + int(scalefactor/4))]
                         
                 ROI2 =  face_frame[shape[29][1]:shape[33][1], #left cheek
-                        shape[4][0]:shape[48][0]]    
+                        (shape[4][0] - int(scalefactor/4)):shape[48][0]]
+
+                ROI3 = face_frame[(shape[57][1] - int(scalefactor/4)):(shape[8][1] - int(scalefactor/3)), # chin/neck
+                        shape[59][0]:shape[55][0]]
+
+                ROI4 = face_frame[(shape[18][1] + scalefactor):(shape[24][1] + int(scalefactor/3)), # forehead
+                        shape[18][0]:shape[25][0]]
+
+                ROI5 = face_frame[shape[16][1]:shape[13][1],
+                       (shape[12][0] + int(scalefactor/4)):(shape[12][0] - int(scalefactor/6))]
+
+                ROI6 = face_frame[shape[0][1]:shape[3][1],
+                       (shape[4][0] + int(scalefactor/6)):(shape[4][0] - int(scalefactor/4))]
 
 
                 rshape = np.zeros_like(shape) 
@@ -83,7 +103,7 @@ class FaceDetection(object):
 
                 mask = np.zeros((face_frame.shape[0], face_frame.shape[1]))
             
-                cv2.fillConvexPoly(mask, rshape[0:27], 1) 
+                cv2.fillConvexPoly(mask, rshape[0:27], 1)
 
         else:
             cv2.putText(frame, "No face detected",
@@ -91,7 +111,7 @@ class FaceDetection(object):
             status = False
 
         frame = cv2.resize(frame, (640, 480))
-        return frame, face_frame, ROI1, ROI2, status, mask    
+        return frame, face_frame, ROI1, ROI2, ROI3, ROI4, ROI5, ROI6, status, mask
 
     # some points in the facial landmarks need to be re-ordered
     def face_remap(self,shape):
