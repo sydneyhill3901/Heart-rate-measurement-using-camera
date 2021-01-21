@@ -12,7 +12,7 @@ class ProcessMod(object):
         self.frame_ROI = np.zeros((10, 10, 3), np.uint8)
         self.frame_out = np.zeros((10, 10, 3), np.uint8)
         self.samples = []
-        self.buffer_size = 100 green component
+        self.buffer_size = 100
         self.times = []
         self.data_buffer = []
         self.fps = 0
@@ -31,7 +31,8 @@ class ProcessMod(object):
     def extractColor(self, frame):
 
         g = np.mean(frame[:, :, 1])
-        return g
+        r = np.mean(frame[:, : ,2])
+        return g, r/g
 
     # https://www.pyimagesearch.com/2014/08/18/skin-detection-step-step-example-using-python-opencv/
     def skinMask1(self, frame, tolerance=4):
@@ -86,20 +87,12 @@ class ProcessMod(object):
 
         mask = cv2.bitwise_or(self.skinMask1(frame), self.skinMask2(frame), self.mask)
         mask = cv2.morphologyEx(mask, cv2.MORPH_OPEN, np.ones((4, 4), np.uint8))
-        return mask
+        return self.mask
 
-    def extractChrominance(self, frame):
-
-        fBlue = np.mean(frame[1, :, :])
-        fRed = np.mean(frame[:, : ,2])
-        fGreen = np.mean(frame[:, :, 0])
-        rChrom = fRed / (fRed + fBlue + fGreen)
-        gChrom = fGreen / (fRed + fBlue + fGreen)
-        return rChrom, gChrom
 
     def run(self):
 
-        applyMask = 3
+        applyMask = 1
 
         if self.process_this_frame:
             try:
@@ -138,8 +131,8 @@ class ProcessMod(object):
         self.frame_ROI = self.face_frame
 
 
-        g1 = self.extractColor(self.ROI1)
-        g2 = self.extractColor(self.ROI2)
+        g1, c1 = self.extractColor(self.ROI1)
+        g2, c2 = self.extractColor(self.ROI2)
 
 
         if self.calculateHR:
@@ -213,37 +206,28 @@ class ProcessMod(object):
                 face_frame[mask] = out[mask]
         else:
 
-            g3 = self.extractColor(self.ROI3)
-            g4 = self.extractColor(self.ROI4)
-            g5 = self.extractColor(self.ROI5)
-            g6 = self.extractColor(self.ROI6)
+            g3, c3 = self.extractColor(self.ROI3)
+            g4, c4 = self.extractColor(self.ROI4)
+            g5, c5 = self.extractColor(self.ROI5)
+            g6, c6 = self.extractColor(self.ROI6)
 
-            cr1, cg1 = self.extractChrominance(self.ROI1)
-            cr2, cg2 = self.extractChrominance(self.ROI2)
-            cr3, cg3 = self.extractChrominance(self.ROI3)
-            cr4, cg4 = self.extractChrominance(self.ROI4)
-            cr5, cg5 = self.extractChrominance(self.ROI5)
-            cr6, cg6 = self.extractChrominance(self.ROI6)
 
-            self.frameData = {
+            self.frame_data = {
                 'RC-G' : g1,
-                'RC-Cr' : cr1,
-                'RC-Cg' : cg1,
                 'LC-G' : g2,
-                'LC-Cr' : cr2,
-                'LC-Cg' : cg2,
                 'C-G' : g3,
-                'C-Cr' : cr3,
-                'C-Cg' : cg3,
                 'F-G' : g4,
-                'F-Cr' : cr4,
-                'F-Cg' : cg4,
                 'OR-G' : g5,
-                'OR-Cr' : cr5,
-                'OR-Cg' : cg5,
                 'OL-G' : g6,
-                'OL-Cr' : cr6,
-                'OL-Cg' : cg6}
+                'RC-C' : c1,
+                'LC-C' : c2,
+                'C-C' : c3,
+                'F-C' : c4,
+                'OR-C' : c5,
+                'OL-C' : c6
+            }
+
+
 
 
     def reset(self):

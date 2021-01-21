@@ -114,7 +114,7 @@ class FaceDetection(object):
         return frame, face_frame, ROI1, ROI2, ROI3, ROI4, ROI5, ROI6, status, mask
 
     # some points in the facial landmarks need to be re-ordered
-    def face_remap(self,shape):
+    def face_remap(self, shape):
         remapped_image = shape.copy()
         # left eye brow
         remapped_image[17] = shape[26]
