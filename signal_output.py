@@ -8,7 +8,10 @@ from sklearn.model_selection import train_test_split
 
 class signalWriter(object):
     def __init__(self):
-        self.dir = './test_small_real'
+
+        # Path to folder containing videos
+        self.dir = './videos'
+
         self.outputPath = ""
         self.vid_count = 0
         self.process = ProcessMod(GUIMode=False)
