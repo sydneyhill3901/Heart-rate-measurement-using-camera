@@ -12,6 +12,7 @@ class ProcessMod(object):
         self.frame_ROI = np.zeros((10, 10, 3), np.uint8)
         self.frame_out = np.zeros((10, 10, 3), np.uint8)
         self.samples = []
+        self.chrom_norm_window = 7
         self.buffer_size = 100
         self.times = []
         self.data_buffer = []
@@ -30,9 +31,12 @@ class ProcessMod(object):
 
     def extractColor(self, frame):
 
+        b = np.mean(frame[:, :, 0])
         g = np.mean(frame[:, :, 1])
         r = np.mean(frame[:, : ,2])
-        return g, r/g
+        return r, g, b
+
+
 
     # https://www.pyimagesearch.com/2014/08/18/skin-detection-step-step-example-using-python-opencv/
     def skinMask1(self, frame, tolerance=4):
@@ -90,17 +94,17 @@ class ProcessMod(object):
         return self.mask
 
 
-    def run(self):
+    def run(self, skip_frames=False, applyMask=0):
 
-        applyMask = 1
 
         if self.process_this_frame:
             try:
-                self.frame, self.face_frame, self.ROI1, self.ROI2, self.ROI3, self.ROI4, self.ROI5, self.ROI6, self.status, self.mask = self.fd.face_detect(
+                self.frame, self.face_frame, self.ROI1, self.ROI2, self.ROI3, self.ROI4, self.ROI5, self.ROI6, self.ROI7, self.status, self.mask = self.fd.face_detect(
                     self.frame_in)
             except TypeError:
                 print("end video")
-        self.process_this_frame = not self.process_this_frame
+        if skip_frames:
+            self.process_this_frame = not self.process_this_frame
 
         self.framecount += 1
         if self.status:
@@ -131,8 +135,8 @@ class ProcessMod(object):
         self.frame_ROI = self.face_frame
 
 
-        g1, c1 = self.extractColor(self.ROI1)
-        g2, c2 = self.extractColor(self.ROI2)
+        r1, g1, b1 = self.extractColor(self.ROI1)
+        r2, g2, b2 = self.extractColor(self.ROI2)
 
 
         if self.calculateHR:
@@ -206,25 +210,36 @@ class ProcessMod(object):
                 face_frame[mask] = out[mask]
         else:
 
-            g3, c3 = self.extractColor(self.ROI3)
-            g4, c4 = self.extractColor(self.ROI4)
-            g5, c5 = self.extractColor(self.ROI5)
-            g6, c6 = self.extractColor(self.ROI6)
+            r3, g3, b3 = self.extractColor(self.ROI3)
+            r4, g4, b4 = self.extractColor(self.ROI4)
+            r5, g5, b5 = self.extractColor(self.ROI5)
+            r6, g6, b6 = self.extractColor(self.ROI6)
+            r7, g7, b7 = self.extractColor(self.ROI7)
+
 
 
             self.frame_data = {
-                'RC-G' : g1,
-                'LC-G' : g2,
-                'C-G' : g3,
-                'F-G' : g4,
-                'OR-G' : g5,
-                'OL-G' : g6,
-                'RC-C' : c1,
-                'LC-C' : c2,
-                'C-C' : c3,
-                'F-C' : c4,
-                'OR-C' : c5,
-                'OL-C' : c6
+                'RC-R': r1,
+                'LC-R': r2,
+                'C-R': r3,
+                'F-R': r4,
+                'OR-R': r5,
+                'OL-R': r6,
+                'CE-R': r7,
+                'RC-G': g1,
+                'LC-G': g2,
+                'C-G': g3,
+                'F-G': g4,
+                'OR-G': g5,
+                'OL-G': g6,
+                'CE-G': g7,
+                'RC-B': b1,
+                'LC-B': b2,
+                'C-B': b3,
+                'F-B': b4,
+                'OR-B': b5,
+                'OL-B': b6,
+                'CE-B': b7
             }
 
 
