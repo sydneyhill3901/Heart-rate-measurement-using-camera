@@ -9,7 +9,7 @@ from sklearn.model_selection import train_test_split
 class signalWriter(object):
     def __init__(self):
 
-        
+
 
         # Path to folder containing videos
         self.dir = './videos'
@@ -46,27 +46,27 @@ class signalWriter(object):
 
     def extractChrominance(self):
 
-        red_R = self.dataset['RC-R'].rolling(self.chrom_norm_interval).mean()
-        red_L = self.dataset['LC-R'].rolling(self.chrom_norm_interval).mean()
-        red_C = self.dataset['C-R'].rolling(self.chrom_norm_interval).mean()
-        red_F = self.dataset['F-R'].rolling(self.chrom_norm_interval).mean()
-        red_OR = self.dataset['OR-R'].rolling(self.chrom_norm_interval).mean()
-        red_OL = self.dataset['OL-R'].rolling(self.chrom_norm_interval).mean()
-        red_CE = self.dataset['CE-R'].rolling(self.chrom_norm_interval).mean()
-        green_R = self.dataset['RC-G'].rolling(self.chrom_norm_interval).mean()
-        green_L = self.dataset['LC-G'].rolling(self.chrom_norm_interval).mean()
-        green_C = self.dataset['C-G'].rolling(self.chrom_norm_interval).mean()
-        green_F = self.dataset['F-G'].rolling(self.chrom_norm_interval).mean()
-        green_OR = self.dataset['OR-G'].rolling(self.chrom_norm_interval).mean()
-        green_OL = self.dataset['OL-G'].rolling(self.chrom_norm_interval).mean()
-        green_CE = self.dataset['CE-G'].rolling(self.chrom_norm_interval).mean()
-        blue_R = self.dataset['RC-B'].rolling(self.chrom_norm_interval).mean()
-        blue_L = self.dataset['LC-B'].rolling(self.chrom_norm_interval).mean()
-        blue_C = self.dataset['C-B'].rolling(self.chrom_norm_interval).mean()
-        blue_F = self.dataset['F-B'].rolling(self.chrom_norm_interval).mean()
-        blue_OR = self.dataset['OR-B'].rolling(self.chrom_norm_interval).mean()
-        blue_OL = self.dataset['OL-B'].rolling(self.chrom_norm_interval).mean()
-        blue_CE = self.dataset['CE-B'].rolling(self.chrom_norm_interval).mean()
+        red_R = (self.dataset['RC-R']) / (self.dataset['RC-R'].rolling(self.chrom_norm_interval, center=True).mean())
+        red_L = (self.dataset['LC-R']) / (self.dataset['LC-R'].rolling(self.chrom_norm_interval, center=True).mean())
+        red_C = (self.dataset['C-R']) / (self.dataset['C-R'].rolling(self.chrom_norm_interval, center=True).mean())
+        red_F = (self.dataset['F-R']) / (self.dataset['F-R'].rolling(self.chrom_norm_interval, center=True).mean())
+        red_OR = (self.dataset['OR-R']) / (self.dataset['OR-R'].rolling(self.chrom_norm_interval, center=True).mean())
+        red_OL = (self.dataset['OL-R']) / (self.dataset['OL-R'].rolling(self.chrom_norm_interval, center=True).mean())
+        red_CE = (self.dataset['CE-R']) / (self.dataset['CE-R'].rolling(self.chrom_norm_interval, center=True).mean())
+        green_R = (self.dataset['RC-G']) / (self.dataset['RC-G'].rolling(self.chrom_norm_interval, center=True).mean())
+        green_L = (self.dataset['LC-G']) / (self.dataset['LC-G'].rolling(self.chrom_norm_interval, center=True).mean())
+        green_C = (self.dataset['C-G']) / (self.dataset['C-G'].rolling(self.chrom_norm_interval, center=True).mean())
+        green_F = (self.dataset['F-G']) / (self.dataset['F-G'].rolling(self.chrom_norm_interval, center=True).mean())
+        green_OR = (self.dataset['OR-G']) / (self.dataset['OR-G'].rolling(self.chrom_norm_interval, center=True).mean())
+        green_OL = (self.dataset['OL-G']) / (self.dataset['OL-G'].rolling(self.chrom_norm_interval, center=True).mean())
+        green_CE = (self.dataset['CE-G']) / (self.dataset['CE-G'].rolling(self.chrom_norm_interval, center=True).mean())
+        blue_R = (self.dataset['RC-B']) / (self.dataset['RC-B'].rolling(self.chrom_norm_interval, center=True).mean())
+        blue_L = (self.dataset['LC-B']) / (self.dataset['LC-B'].rolling(self.chrom_norm_interval, center=True).mean())
+        blue_C = (self.dataset['C-B']) / (self.dataset['C-B'].rolling(self.chrom_norm_interval, center=True).mean())
+        blue_F = (self.dataset['F-B']) / (self.dataset['F-B'].rolling(self.chrom_norm_interval, center=True).mean())
+        blue_OR = (self.dataset['OR-B']) / (self.dataset['OR-B'].rolling(self.chrom_norm_interval, center=True).mean())
+        blue_OL = (self.dataset['OL-B']) / (self.dataset['OL-B'].rolling(self.chrom_norm_interval, center=True).mean())
+        blue_CE = (self.dataset['CE-B']) / (self.dataset['CE-B'].rolling(self.chrom_norm_interval, center=True).mean())
 
 
         chrom_R = (1.5 * red_R) - (3 * green_R) + (1.5 * blue_R)
